@@ -1,0 +1,3995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width,
+    initial-scale=1.0,
+    maximum-scale=1.0,
+    user-scalable=no,
+    viewport-fit=cover"
+>
+
+<title>Neon Drift</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#050510">
+
+<!-- iPhone -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+>
+
+<meta
+    name="apple-mobile-web-app-title"
+    content="Neon Drift"
+>
+
+<link
+    rel="apple-touch-icon"
+    href="icon-180.png"
+>
+
+<style>
+
+/* =========================
+   GENERAL
+========================= */
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+html,
+body {
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    background: #050510;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    touch-action: none;
+}
+
+body {
+
+    position: fixed;
+
+    inset: 0;
+
+    overscroll-behavior: none;
+}
+
+/* =========================
+   GAME CANVAS
+========================= */
+
+#game {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+}
+
+/* =========================
+   HUD
+========================= */
+
+#hud {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+
+    z-index: 10;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    padding:
+
+        calc(env(safe-area-inset-top) + 12px)
+
+        14px
+
+        0
+
+        14px;
+
+    pointer-events: none;
+}
+
+.hudBox {
+
+    min-width: 95px;
+
+    padding: 10px 14px;
+
+    border-radius: 18px;
+
+    border:
+
+        1px solid
+
+        rgba(255,255,255,.12);
+
+    background:
+
+        rgba(0,0,0,.38);
+
+    backdrop-filter:
+
+        blur(15px);
+
+    -webkit-backdrop-filter:
+
+        blur(15px);
+
+    box-shadow:
+
+        0 10px 35px
+
+        rgba(0,0,0,.3);
+}
+
+.hudLabel {
+
+    color: #8e91ab;
+
+    font-size: 11px;
+
+    letter-spacing: 1.5px;
+
+    font-weight: 800;
+}
+
+.hudValue {
+
+    color: white;
+
+    font-size: 25px;
+
+    font-weight: 1000;
+
+    margin-top: 2px;
+}
+
+#combo {
+
+    color: #68f7ff;
+}
+
+/* =========================
+   PAUSE BUTTON
+========================= */
+
+#pauseBtn {
+
+    position: fixed;
+
+    right: 16px;
+
+    bottom:
+
+        calc(
+            env(safe-area-inset-bottom)
+            + 16px
+        );
+
+    z-index: 11;
+
+    width: 54px;
+    height: 54px;
+
+    border: 1px solid
+
+        rgba(255,255,255,.15);
+
+    border-radius: 50%;
+
+    color: white;
+
+    background:
+
+        rgba(5,5,18,.55);
+
+    backdrop-filter:
+
+        blur(15px);
+
+    -webkit-backdrop-filter:
+
+        blur(15px);
+
+    font-size: 21px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+}
+
+/* =========================
+   SCREENS
+========================= */
+
+.screen {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 30;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding:
+
+        calc(
+            env(safe-area-inset-top)
+            + 24px
+        )
+
+        22px
+
+        calc(
+            env(safe-area-inset-bottom)
+            + 24px
+        );
+
+    background:
+
+        radial-gradient(
+            circle at 50% 25%,
+            rgba(0,240,255,.14),
+            transparent 35%
+        ),
+
+        radial-gradient(
+            circle at 20% 80%,
+            rgba(255,0,170,.12),
+            transparent 40%
+        ),
+
+        rgba(2,2,12,.83);
+
+    backdrop-filter:
+
+        blur(11px);
+
+    -webkit-backdrop-filter:
+
+        blur(11px);
+}
+
+.panel {
+
+    width:
+
+        min(
+            440px,
+            100%
+        );
+
+    padding:
+
+        30px 24px;
+
+    border-radius: 30px;
+
+    border:
+
+        1px solid
+
+        rgba(255,255,255,.13);
+
+    background:
+
+        rgba(12,12,32,.86);
+
+    box-shadow:
+
+        0 35px 100px
+
+        rgba(0,0,0,.55),
+
+        inset 0 0 50px
+
+        rgba(255,255,255,.02);
+
+    text-align: center;
+}
+
+.logo {
+
+    margin: 0;
+
+    color: white;
+
+    font-size: 45px;
+
+    line-height: 1;
+
+    font-weight: 1000;
+
+    letter-spacing: -2px;
+
+    text-shadow:
+
+        0 0 15px #00eaff,
+
+        0 0 45px #0077ff;
+}
+
+.subtitle {
+
+    color: #a8a8c0;
+
+    margin:
+
+        10px 0
+
+        25px;
+}
+
+.instructions {
+
+    margin-bottom: 22px;
+
+    padding: 16px;
+
+    border-radius: 18px;
+
+    color: #dedeee;
+
+    background:
+
+        rgba(255,255,255,.05);
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.mainButton {
+
+    width: 100%;
+
+    padding: 17px;
+
+    border: none;
+
+    border-radius: 18px;
+
+    color: #031018;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #70fbff,
+            #27a6ff
+        );
+
+    font-size: 18px;
+
+    font-weight: 1000;
+
+    box-shadow:
+
+        0 0 30px
+
+        rgba(50,220,255,.32);
+
+    cursor: pointer;
+}
+
+.secondaryButton {
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 15px;
+
+    border:
+
+        1px solid
+
+        rgba(255,255,255,.12);
+
+    border-radius: 18px;
+
+    color: white;
+
+    background:
+
+        rgba(255,255,255,.05);
+
+    font-size: 16px;
+
+    font-weight: 850;
+
+    cursor: pointer;
+}
+
+/* =========================
+   GAME OVER STATS
+========================= */
+
+.statRow {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin:
+
+        22px 0;
+}
+
+.stat {
+
+    flex: 1;
+
+    padding:
+
+        14px 5px;
+
+    border-radius: 16px;
+
+    background:
+
+        rgba(255,255,255,.05);
+}
+
+.stat strong {
+
+    display: block;
+
+    color: white;
+
+    font-size: 24px;
+}
+
+.stat span {
+
+    color: #898ca6;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: .8px;
+}
+
+/* =========================
+   HIDDEN SCREENS
+========================= */
+
+#gameOverScreen,
+#pauseScreen {
+
+    display: none;
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+#message {
+
+    position: fixed;
+
+    left: 50%;
+
+    top: 32%;
+
+    z-index: 18;
+
+    transform:
+
+        translate(
+            -50%,
+            -50%
+        );
+
+    opacity: 0;
+
+    color: white;
+
+    font-size: 24px;
+
+    font-weight: 1000;
+
+    text-align: center;
+
+    text-shadow:
+
+        0 0 20px currentColor;
+
+    pointer-events: none;
+}
+
+/* =========================
+   FLASH
+========================= */
+
+#flash {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 20;
+
+    opacity: 0;
+
+    background: white;
+
+    pointer-events: none;
+}
+
+/* =========================
+   SMALL PHONES
+========================= */
+
+@media (max-height: 700px) {
+
+    .panel {
+
+        padding: 22px 20px;
+    }
+
+    .logo {
+
+        font-size: 38px;
+    }
+
+    .subtitle {
+
+        margin-bottom: 16px;
+    }
+
+    .instructions {
+
+        font-size: 13px;
+
+        line-height: 1.45;
+
+        margin-bottom: 16px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- GAME -->
+
+<canvas id="game"></canvas>
+
+
+<!-- HUD -->
+
+<div id="hud">
+
+    <div class="hudBox">
+
+        <div class="hudLabel">
+            SCORE
+        </div>
+
+        <div
+            class="hudValue"
+            id="score"
+        >
+            0
+        </div>
+
+    </div>
+
+
+    <div
+        class="hudBox"
+        style="text-align:right;"
+    >
+
+        <div class="hudLabel">
+            COMBO
+        </div>
+
+        <div
+            class="hudValue"
+            id="combo"
+        >
+            x1
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- PAUSE -->
+
+<button id="pauseBtn">
+    Ⅱ
+</button>
+
+
+<!-- GAME MESSAGE -->
+
+<div id="message"></div>
+
+
+<!-- FLASH -->
+
+<div id="flash"></div>
+
+
+<!-- START SCREEN -->
+
+<div
+    class="screen"
+    id="startScreen"
+>
+
+    <div class="panel">
+
+        <h1 class="logo">
+            NEON DRIFT
+        </h1>
+
+        <div class="subtitle">
+            Survive the endless neon storm.
+        </div>
+
+
+        <div class="instructions">
+
+            👆 Drag left and right to move.
+
+            <br>
+
+            🔷 Collect energy orbs.
+
+            <br>
+
+            ⚠️ Dodge the red obstacles.
+
+            <br>
+
+            🛡️ Collect shields to survive a hit.
+
+            <br>
+
+            🔥 Keep collecting to build your combo.
+
+        </div>
+
+
+        <button
+            class="mainButton"
+            onclick="startGame()"
+        >
+
+            PLAY
+
+        </button>
+
+
+        <div
+            style="
+                margin-top:17px;
+                color:#777b94;
+                font-size:13px;
+            "
+        >
+
+            BEST SCORE:
+
+            <span id="startBest">
+                0
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- GAME OVER -->
+
+<div
+    class="screen"
+    id="gameOverScreen"
+>
+
+    <div class="panel">
+
+        <h1
+            class="logo"
+            style="font-size:36px;"
+        >
+
+            GAME OVER
+
+        </h1>
+
+
+        <div class="statRow">
+
+            <div class="stat">
+
+                <strong id="finalScore">
+                    0
+                </strong>
+
+                <span>
+                    SCORE
+                </span>
+
+            </div>
+
+
+            <div class="stat">
+
+                <strong id="bestScore">
+                    0
+                </strong>
+
+                <span>
+                    BEST
+                </span>
+
+            </div>
+
+
+            <div class="stat">
+
+                <strong id="finalCombo">
+                    x1
+                </strong>
+
+                <span>
+                    BEST COMBO
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="mainButton"
+            onclick="startGame()"
+        >
+
+            PLAY AGAIN
+
+        </button>
+
+
+        <button
+            class="secondaryButton"
+            onclick="showStart()"
+        >
+
+            MAIN MENU
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- PAUSE SCREEN -->
+
+<div
+    class="screen"
+    id="pauseScreen"
+>
+
+    <div class="panel">
+
+        <h1
+            class="logo"
+            style="font-size:36px;"
+        >
+
+            PAUSED
+
+        </h1>
+
+
+        <p class="subtitle">
+
+            Your run is safe.
+
+        </p>
+
+
+        <button
+            class="mainButton"
+            onclick="resumeGame()"
+        >
+
+            CONTINUE
+
+        </button>
+
+
+        <button
+            class="secondaryButton"
+            onclick="showStart()"
+        >
+
+            QUIT
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   CANVAS
+========================= */
+
+const canvas =
+    document.getElementById("game");
+
+const ctx =
+    canvas.getContext("2d");
+
+
+const scoreText =
+    document.getElementById("score");
+
+const comboText =
+    document.getElementById("combo");
+
+const message =
+    document.getElementById("message");
+
+const flash =
+    document.getElementById("flash");
+
+
+let W = 0;
+
+let H = 0;
+
+let DPR = 1;
+
+
+/* =========================
+   GAME STATE
+========================= */
+
+let running = false;
+
+let paused = false;
+
+let score = 0;
+
+let combo = 1;
+
+let bestCombo = 1;
+
+let comboTimer = 0;
+
+let speed = 5;
+
+let spawnTimer = 0;
+
+let orbTimer = 0;
+
+let shieldTimer = 0;
+
+let lastTime = 0;
+
+
+/* =========================
+   ARRAYS
+========================= */
+
+let obstacles = [];
+
+let orbs = [];
+
+let shields = [];
+
+let particles = [];
+
+let stars = [];
+
+
+/* =========================
+   PLAYER
+========================= */
+
+const player = {
+
+    x: 0,
+
+    y: 0,
+
+    width: 42,
+
+    height: 58,
+
+    targetX: 0,
+
+    shield: false,
+
+    tilt: 0
+
+};
+
+
+/* =========================
+   RESIZE
+========================= */
+
+function resize() {
+
+    DPR = Math.min(
+
+        window.devicePixelRatio || 1,
+
+        2
+
+    );
+
+
+    W = window.innerWidth;
+
+    H = window.innerHeight;
+
+
+    canvas.width =
+        W * DPR;
+
+    canvas.height =
+        H * DPR;
+
+
+    canvas.style.width =
+        W + "px";
+
+    canvas.style.height =
+        H + "px";
+
+
+    ctx.setTransform(
+
+        DPR,
+
+        0,
+
+        0,
+
+        DPR,
+
+        0,
+
+        0
+
+    );
+
+
+    player.y =
+        H - 120;
+
+
+    if (!running) {
+
+        player.x =
+            W / 2;
+
+        player.targetX =
+            W / 2;
+
+    }
+
+
+    createStars();
+
+}
+
+
+window.addEventListener(
+
+    "resize",
+
+    resize
+
+);
+
+
+/* =========================
+   STARS
+========================= */
+
+function createStars() {
+
+    stars = [];
+
+
+    for (
+
+        let i = 0;
+
+        i < 90;
+
+        i++
+
+    ) {
+
+        stars.push({
+
+            x:
+                Math.random()
+                * W,
+
+            y:
+                Math.random()
+                * H,
+
+            size:
+                Math.random()
+                * 2
+                + .3,
+
+            speed:
+                Math.random()
+                * 2
+                + .3,
+
+            alpha:
+                Math.random()
+                * .7
+                + .2
+
+        });
+
+    }
+
+}
+
+
+/* =========================
+   RESET
+========================= */
+
+function resetGame() {
+
+    score = 0;
+
+    combo = 1;
+
+    bestCombo = 1;
+
+    comboTimer = 0;
+
+    speed = 5;
+
+
+    obstacles = [];
+
+    orbs = [];
+
+    shields = [];
+
+    particles = [];
+
+
+    spawnTimer = 0;
+
+    orbTimer = 0;
+
+    shieldTimer = 0;
+
+
+    player.x =
+        W / 2;
+
+    player.targetX =
+        W / 2;
+
+    player.y =
+        H - 120;
+
+    player.shield =
+        false;
+
+
+    scoreText.textContent =
+        "0";
+
+    comboText.textContent =
+        "x1";
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+function startGame() {
+
+    document
+        .getElementById(
+            "startScreen"
+        )
+        .style
+        .display =
+            "none";
+
+
+    document
+        .getElementById(
+            "gameOverScreen"
+        )
+        .style
+        .display =
+            "none";
+
+
+    document
+        .getElementById(
+            "pauseScreen"
+        )
+        .style
+        .display =
+            "none";
+
+
+    resetGame();
+
+
+    running = true;
+
+    paused = false;
+
+
+    lastTime =
+        performance.now();
+
+
+    unlockAudio();
+
+
+    requestAnimationFrame(
+        loop
+    );
+
+}
+
+
+/* =========================
+   MENU
+========================= */
+
+function showStart() {
+
+    running = false;
+
+    paused = false;
+
+
+    document
+        .getElementById(
+            "pauseScreen"
+        )
+        .style
+        .display =
+            "none";
+
+
+    document
+        .getElementById(
+            "gameOverScreen"
+        )
+        .style
+        .display =
+            "none";
+
+
+    document
+        .getElementById(
+            "startScreen"
+        )
+        .style
+        .display =
+            "flex";
+
+
+    updateBestUI();
+
+}
+
+
+/* =========================
+   PAUSE
+========================= */
+
+function pauseGame() {
+
+    if (
+        !running
+        ||
+        paused
+    ) {
+
+        return;
+
+    }
+
+
+    paused = true;
+
+
+    document
+        .getElementById(
+            "pauseScreen"
+        )
+        .style
+        .display =
+            "flex";
+
+}
+
+
+function resumeGame() {
+
+    if (!running) {
+
+        return;
+
+    }
+
+
+    paused = false;
+
+
+    document
+        .getElementById(
+            "pauseScreen"
+        )
+        .style
+        .display =
+            "none";
+
+
+    lastTime =
+        performance.now();
+
+
+    requestAnimationFrame(
+        loop
+    );
+
+}
+
+
+document
+    .getElementById(
+        "pauseBtn"
+    )
+    .onclick =
+        () => {
+
+            if (paused) {
+
+                resumeGame();
+
+            }
+
+            else {
+
+                pauseGame();
+
+            }
+
+        };
+
+
+/* =========================
+   SPAWN OBSTACLE
+========================= */
+
+function spawnObstacle() {
+
+    const size =
+
+        30
+
+        +
+
+        Math.random()
+        * 35;
+
+
+    obstacles.push({
+
+        x:
+
+            25
+
+            +
+
+            Math.random()
+            * (W - 50),
+
+        y:
+
+            -60,
+
+        size:
+
+            size,
+
+        speed:
+
+            speed
+
+            +
+
+            Math.random()
+            * 2,
+
+        rotation:
+
+            Math.random()
+            * Math.PI,
+
+        rotationSpeed:
+
+            (
+                Math.random()
+                - .5
+            )
+
+            * .07
+
+    });
+
+}
+
+
+/* =========================
+   SPAWN ORB
+========================= */
+
+function spawnOrb() {
+
+    orbs.push({
+
+        x:
+
+            30
+
+            +
+
+            Math.random()
+            * (W - 60),
+
+        y:
+
+            -30,
+
+        size:
+
+            13,
+
+        speed:
+
+            speed * .85,
+
+        pulse:
+
+            Math.random()
+            * 10
+
+    });
+
+}
+
+
+/* =========================
+   SPAWN SHIELD
+========================= */
+
+function spawnShield() {
+
+    shields.push({
+
+        x:
+
+            40
+
+            +
+
+            Math.random()
+            * (W - 80),
+
+        y:
+
+            -40,
+
+        size:
+
+            18,
+
+        speed:
+
+            speed * .8,
+
+        angle:
+
+            0
+
+    });
+
+}
+
+
+/* =========================
+   PARTICLES
+========================= */
+
+function createExplosion(
+
+    x,
+
+    y,
+
+    color,
+
+    count = 20
+
+) {
+
+    for (
+
+        let i = 0;
+
+        i < count;
+
+        i++
+
+    ) {
+
+        const angle =
+
+            Math.random()
+
+            *
+
+            Math.PI
+
+            *
+
+            2;
+
+
+        const force =
+
+            Math.random()
+
+            *
+
+            6
+
+            +
+
+            1;
+
+
+        particles.push({
+
+            x:
+
+                x,
+
+            y:
+
+                y,
+
+            vx:
+
+                Math.cos(angle)
+
+                *
+
+                force,
+
+            vy:
+
+                Math.sin(angle)
+
+                *
+
+                force,
+
+            life:
+
+                1,
+
+            size:
+
+                Math.random()
+
+                *
+
+                5
+
+                +
+
+                2,
+
+            color:
+
+                color
+
+        });
+
+    }
+
+}
+
+
+/* =========================
+   UPDATE
+========================= */
+
+function update(dt) {
+
+    const multiplier =
+
+        dt / 16.67;
+
+
+    speed =
+
+        Math.min(
+
+            13,
+
+            5
+
+            +
+
+            score / 600
+
+        );
+
+
+    player.x +=
+
+        (
+            player.targetX
+
+            -
+
+            player.x
+        )
+
+        *
+
+        .18
+
+        *
+
+        multiplier;
+
+
+    player.x =
+
+        Math.max(
+
+            player.width / 2
+            + 8,
+
+            Math.min(
+
+                W
+                -
+                player.width / 2
+                -
+                8,
+
+                player.x
+
+            )
+
+        );
+
+
+    player.tilt =
+
+        (
+            player.targetX
+
+            -
+
+            player.x
+
+        )
+
+        *
+
+        .018;
+
+
+    spawnTimer -= dt;
+
+    orbTimer -= dt;
+
+    shieldTimer -= dt;
+
+    comboTimer -= dt;
+
+
+/* =========================
+   OBSTACLE SPAWNING
+========================= */
+
+    if (
+        spawnTimer <= 0
+    ) {
+
+        spawnObstacle();
+
+
+        if (
+            score > 300
+
+            &&
+
+            Math.random()
+            < .2
+        ) {
+
+            spawnObstacle();
+
+        }
+
+
+        spawnTimer =
+
+            Math.max(
+
+                270,
+
+                850
+
+                -
+
+                score
+                * .18
+
+            );
+
+    }
+
+
+/* =========================
+   ORB SPAWNING
+========================= */
+
+    if (
+        orbTimer <= 0
+    ) {
+
+        spawnOrb();
+
+
+        orbTimer =
+
+            700
+
+            +
+
+            Math.random()
+            * 500;
+
+    }
+
+
+/* =========================
+   SHIELD SPAWNING
+========================= */
+
+    if (
+        shieldTimer <= 0
+    ) {
+
+        if (
+            Math.random()
+            < .45
+        ) {
+
+            spawnShield();
+
+        }
+
+
+        shieldTimer =
+
+            8000
+
+            +
+
+            Math.random()
+            * 7000;
+
+    }
+
+
+/* =========================
+   COMBO
+========================= */
+
+    if (
+
+        comboTimer <= 0
+
+        &&
+
+        combo > 1
+
+    ) {
+
+        combo = 1;
+
+
+        comboText.textContent =
+            "x1";
+
+    }
+
+
+/* =========================
+   OBSTACLES
+========================= */
+
+    obstacles.forEach(
+
+        obstacle => {
+
+            obstacle.y +=
+
+                obstacle.speed
+
+                *
+
+                multiplier;
+
+
+            obstacle.rotation +=
+
+                obstacle.rotationSpeed
+
+                *
+
+                multiplier;
+
+
+            if (
+
+                collidesCirclePlayer(
+
+                    obstacle.x,
+
+                    obstacle.y,
+
+                    obstacle.size
+                    * .42
+
+                )
+
+            ) {
+
+                if (
+                    player.shield
+                ) {
+
+                    player.shield =
+                        false;
+
+
+                    createExplosion(
+
+                        obstacle.x,
+
+                        obstacle.y,
+
+                        "#65faff",
+
+                        35
+
+                    );
+
+
+                    vibrate(
+                        [30,30,40]
+                    );
+
+
+                    sound(
+
+                        170,
+
+                        .15,
+
+                        "sawtooth"
+
+                    );
+
+
+                    showMessage(
+
+                        "SHIELD SAVED YOU!",
+
+                        "#65faff"
+
+                    );
+
+
+                    obstacle.dead =
+                        true;
+
+                }
+
+                else {
+
+                    createExplosion(
+
+                        player.x,
+
+                        player.y,
+
+                        "#ff315d",
+
+                        50
+
+                    );
+
+
+                    vibrate(
+
+                        [80,40,100]
+
+                    );
+
+
+                    gameOver();
+
+                }
+
+            }
+
+        }
+
+    );
+
+
+/* =========================
+   ORBS
+========================= */
+
+    orbs.forEach(
+
+        orb => {
+
+            orb.y +=
+
+                orb.speed
+
+                *
+
+                multiplier;
+
+
+            orb.pulse +=
+
+                .12
+
+                *
+
+                multiplier;
+
+
+            if (
+
+                collidesCirclePlayer(
+
+                    orb.x,
+
+                    orb.y,
+
+                    orb.size + 8
+
+                )
+
+            ) {
+
+                score +=
+
+                    10
+
+                    *
+
+                    combo;
+
+
+                combo =
+
+                    Math.min(
+
+                        10,
+
+                        combo + 1
+
+                    );
+
+
+                bestCombo =
+
+                    Math.max(
+
+                        bestCombo,
+
+                        combo
+
+                    );
+
+
+                comboTimer =
+                    2300;
+
+
+                comboText.textContent =
+
+                    "x"
+
+                    +
+
+                    combo;
+
+
+                createExplosion(
+
+                    orb.x,
+
+                    orb.y,
+
+                    "#49f8ff",
+
+                    16
+
+                );
+
+
+                sound(
+
+                    500
+
+                    +
+
+                    combo * 40,
+
+                    .05,
+
+                    "sine"
+
+                );
+
+
+                vibrate(15);
+
+
+                orb.dead =
+                    true;
+
+            }
+
+        }
+
+    );
+
+
+/* =========================
+   SHIELDS
+========================= */
+
+    shields.forEach(
+
+        shield => {
+
+            shield.y +=
+
+                shield.speed
+
+                *
+
+                multiplier;
+
+
+            shield.angle +=
+
+                .06
+
+                *
+
+                multiplier;
+
+
+            if (
+
+                collidesCirclePlayer(
+
+                    shield.x,
+
+                    shield.y,
+
+                    shield.size + 10
+
+                )
+
+            ) {
+
+                player.shield =
+                    true;
+
+
+                createExplosion(
+
+                    shield.x,
+
+                    shield.y,
+
+                    "#9d79ff",
+
+                    25
+
+                );
+
+
+                sound(
+
+                    280,
+
+                    .18,
+
+                    "sine"
+
+                );
+
+
+                vibrate(
+
+                    [20,20,30]
+
+                );
+
+
+                showMessage(
+
+                    "SHIELD ACTIVE",
+
+                    "#aa8cff"
+
+                );
+
+
+                shield.dead =
+                    true;
+
+            }
+
+        }
+
+    );
+
+
+/* =========================
+   REMOVE OLD OBJECTS
+========================= */
+
+    obstacles =
+
+        obstacles.filter(
+
+            obstacle =>
+
+                obstacle.y
+                < H + 100
+
+                &&
+
+                !obstacle.dead
+
+        );
+
+
+    orbs =
+
+        orbs.filter(
+
+            orb =>
+
+                orb.y
+                < H + 60
+
+                &&
+
+                !orb.dead
+
+        );
+
+
+    shields =
+
+        shields.filter(
+
+            shield =>
+
+                shield.y
+                < H + 60
+
+                &&
+
+                !shield.dead
+
+        );
+
+
+/* =========================
+   PARTICLE UPDATE
+========================= */
+
+    particles.forEach(
+
+        particle => {
+
+            particle.x +=
+
+                particle.vx
+
+                *
+
+                multiplier;
+
+
+            particle.y +=
+
+                particle.vy
+
+                *
+
+                multiplier;
+
+
+            particle.vx *=
+                .97;
+
+            particle.vy *=
+                .97;
+
+
+            particle.life -=
+
+                .025
+
+                *
+
+                multiplier;
+
+        }
+
+    );
+
+
+    particles =
+
+        particles.filter(
+
+            particle =>
+
+                particle.life
+                > 0
+
+        );
+
+
+/* =========================
+   STAR UPDATE
+========================= */
+
+    stars.forEach(
+
+        star => {
+
+            star.y +=
+
+                star.speed
+
+                *
+
+                (
+                    1
+                    +
+                    speed
+                    *
+                    .09
+                )
+
+                *
+
+                multiplier;
+
+
+            if (
+                star.y > H
+            ) {
+
+                star.y =
+                    -5;
+
+
+                star.x =
+
+                    Math.random()
+
+                    *
+
+                    W;
+
+            }
+
+        }
+
+    );
+
+
+/* =========================
+   SCORE
+========================= */
+
+    score +=
+
+        dt
+        *
+        .005;
+
+
+    scoreText.textContent =
+
+        Math.floor(score);
+
+}
+
+
+/* =========================
+   COLLISION
+========================= */
+
+function collidesCirclePlayer(
+
+    x,
+
+    y,
+
+    radius
+
+) {
+
+    const nearestX =
+
+        Math.max(
+
+            player.x
+            -
+            player.width / 2,
+
+            Math.min(
+
+                x,
+
+                player.x
+                +
+                player.width / 2
+
+            )
+
+        );
+
+
+    const nearestY =
+
+        Math.max(
+
+            player.y
+            -
+            player.height / 2,
+
+            Math.min(
+
+                y,
+
+                player.y
+                +
+                player.height / 2
+
+            )
+
+        );
+
+
+    const dx =
+
+        x - nearestX;
+
+
+    const dy =
+
+        y - nearestY;
+
+
+    return (
+
+        dx * dx
+
+        +
+
+        dy * dy
+
+        <
+
+        radius * radius
+
+    );
+
+}
+
+
+/* =========================
+   BACKGROUND
+========================= */
+
+function drawBackground() {
+
+    const gradient =
+
+        ctx.createLinearGradient(
+
+            0,
+
+            0,
+
+            0,
+
+            H
+
+        );
+
+
+    gradient.addColorStop(
+
+        0,
+
+        "#03030b"
+
+    );
+
+
+    gradient.addColorStop(
+
+        .5,
+
+        "#071020"
+
+    );
+
+
+    gradient.addColorStop(
+
+        1,
+
+        "#12051c"
+
+    );
+
+
+    ctx.fillStyle =
+        gradient;
+
+
+    ctx.fillRect(
+
+        0,
+
+        0,
+
+        W,
+
+        H
+
+    );
+
+
+/* STARS */
+
+    stars.forEach(
+
+        star => {
+
+            ctx.globalAlpha =
+                star.alpha;
+
+
+            ctx.fillStyle =
+                "#c6efff";
+
+
+            ctx.beginPath();
+
+
+            ctx.arc(
+
+                star.x,
+
+                star.y,
+
+                star.size,
+
+                0,
+
+                Math.PI * 2
+
+            );
+
+
+            ctx.fill();
+
+        }
+
+    );
+
+
+    ctx.globalAlpha =
+        1;
+
+
+/* GRID */
+
+    ctx.strokeStyle =
+
+        "rgba(30,210,255,.07)";
+
+
+    ctx.lineWidth =
+        1;
+
+
+    for (
+
+        let x = 0;
+
+        x < W;
+
+        x += 45
+
+    ) {
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+
+            x,
+
+            0
+
+        );
+
+
+        ctx.lineTo(
+
+            x,
+
+            H
+
+        );
+
+
+        ctx.stroke();
+
+    }
+
+
+    const offset =
+
+        (
+            performance.now()
+            *
+            .07
+        )
+
+        %
+
+        45;
+
+
+    for (
+
+        let y = -45;
+
+        y < H;
+
+        y += 45
+
+    ) {
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+
+            0,
+
+            y + offset
+
+        );
+
+
+        ctx.lineTo(
+
+            W,
+
+            y + offset
+
+        );
+
+
+        ctx.stroke();
+
+    }
+
+}
+
+
+/* =========================
+   PLAYER
+========================= */
+
+function drawPlayer() {
+
+    ctx.save();
+
+
+    ctx.translate(
+
+        player.x,
+
+        player.y
+
+    );
+
+
+    ctx.rotate(
+
+        player.tilt
+
+    );
+
+
+/* SHIELD */
+
+    if (
+        player.shield
+    ) {
+
+        ctx.shadowBlur =
+            30;
+
+
+        ctx.shadowColor =
+            "#8b70ff";
+
+
+        ctx.strokeStyle =
+
+            "rgba(160,130,255,.9)";
+
+
+        ctx.lineWidth =
+            3;
+
+
+        ctx.beginPath();
+
+
+        ctx.arc(
+
+            0,
+
+            0,
+
+            43,
+
+            0,
+
+            Math.PI * 2
+
+        );
+
+
+        ctx.stroke();
+
+    }
+
+
+/* SHIP BODY */
+
+    ctx.shadowBlur =
+        28;
+
+
+    ctx.shadowColor =
+        "#28eaff";
+
+
+    const body =
+
+        ctx.createLinearGradient(
+
+            -20,
+
+            -30,
+
+            20,
+
+            30
+
+        );
+
+
+    body.addColorStop(
+
+        0,
+
+        "#eaffff"
+
+    );
+
+
+    body.addColorStop(
+
+        .35,
+
+        "#39eaff"
+
+    );
+
+
+    body.addColorStop(
+
+        1,
+
+        "#266cff"
+
+    );
+
+
+    ctx.fillStyle =
+        body;
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+
+        0,
+
+        -31
+
+    );
+
+
+    ctx.lineTo(
+
+        21,
+
+        23
+
+    );
+
+
+    ctx.lineTo(
+
+        7,
+
+        17
+
+    );
+
+
+    ctx.lineTo(
+
+        0,
+
+        30
+
+    );
+
+
+    ctx.lineTo(
+
+        -7,
+
+        17
+
+    );
+
+
+    ctx.lineTo(
+
+        -21,
+
+        23
+
+    );
+
+
+    ctx.closePath();
+
+
+    ctx.fill();
+
+
+/* ENGINE */
+
+    ctx.shadowColor =
+        "#ff3cac";
+
+
+    ctx.fillStyle =
+        "#ff4ac9";
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+
+        -6,
+
+        21
+
+    );
+
+
+    ctx.lineTo(
+
+        0,
+
+        48
+        +
+        Math.random()
+        * 12
+
+    );
+
+
+    ctx.lineTo(
+
+        6,
+
+        21
+
+    );
+
+
+    ctx.fill();
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================
+   OBSTACLE DRAWING
+========================= */
+
+function drawObstacle(
+
+    obstacle
+
+) {
+
+    ctx.save();
+
+
+    ctx.translate(
+
+        obstacle.x,
+
+        obstacle.y
+
+    );
+
+
+    ctx.rotate(
+
+        obstacle.rotation
+
+    );
+
+
+    ctx.shadowBlur =
+        22;
+
+
+    ctx.shadowColor =
+        "#ff234f";
+
+
+    ctx.fillStyle =
+        "#ff234f";
+
+
+    ctx.beginPath();
+
+
+    const points =
+        6;
+
+
+    for (
+
+        let i = 0;
+
+        i < points;
+
+        i++
+
+    ) {
+
+        const angle =
+
+            (
+                Math.PI
+                *
+                2
+                /
+                points
+            )
+
+            *
+
+            i;
+
+
+        const radius =
+
+            i % 2 === 0
+
+            ?
+
+            obstacle.size / 2
+
+            :
+
+            obstacle.size
+            * .37;
+
+
+        const x =
+
+            Math.cos(angle)
+
+            *
+
+            radius;
+
+
+        const y =
+
+            Math.sin(angle)
+
+            *
+
+            radius;
+
+
+        if (
+            i === 0
+        ) {
+
+            ctx.moveTo(
+                x,
+                y
+            );
+
+        }
+
+        else {
+
+            ctx.lineTo(
+                x,
+                y
+            );
+
+        }
+
+    }
+
+
+    ctx.closePath();
+
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "#5d0717";
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+
+        0,
+
+        0,
+
+        obstacle.size
+        *
+        .18,
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+
+    ctx.fill();
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================
+   ORB DRAWING
+========================= */
+
+function drawOrb(
+
+    orb
+
+) {
+
+    const pulse =
+
+        Math.sin(
+
+            orb.pulse
+
+        )
+
+        *
+
+        3;
+
+
+    ctx.save();
+
+
+    ctx.shadowBlur =
+        25;
+
+
+    ctx.shadowColor =
+        "#00eeff";
+
+
+    ctx.fillStyle =
+        "#6fffff";
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+
+        orb.x,
+
+        orb.y,
+
+        orb.size
+
+        +
+
+        pulse * .15,
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "white";
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+
+        orb.x - 4,
+
+        orb.y - 4,
+
+        3,
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+
+    ctx.fill();
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================
+   SHIELD DRAWING
+========================= */
+
+function drawShield(
+
+    shield
+
+) {
+
+    ctx.save();
+
+
+    ctx.translate(
+
+        shield.x,
+
+        shield.y
+
+    );
+
+
+    ctx.rotate(
+
+        shield.angle
+
+    );
+
+
+    ctx.shadowBlur =
+        25;
+
+
+    ctx.shadowColor =
+        "#a57aff";
+
+
+    ctx.strokeStyle =
+        "#b59cff";
+
+
+    ctx.lineWidth =
+        4;
+
+
+    ctx.beginPath();
+
+
+    for (
+
+        let i = 0;
+
+        i < 6;
+
+        i++
+
+    ) {
+
+        const angle =
+
+            Math.PI
+            *
+            2
+            *
+            i
+            /
+            6;
+
+
+        const x =
+
+            Math.cos(angle)
+
+            *
+
+            shield.size;
+
+
+        const y =
+
+            Math.sin(angle)
+
+            *
+
+            shield.size;
+
+
+        if (
+            i === 0
+        ) {
+
+            ctx.moveTo(
+                x,
+                y
+            );
+
+        }
+
+        else {
+
+            ctx.lineTo(
+                x,
+                y
+            );
+
+        }
+
+    }
+
+
+    ctx.closePath();
+
+
+    ctx.stroke();
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================
+   PARTICLE DRAWING
+========================= */
+
+function drawParticles() {
+
+    particles.forEach(
+
+        particle => {
+
+            ctx.globalAlpha =
+                particle.life;
+
+
+            ctx.fillStyle =
+                particle.color;
+
+
+            ctx.shadowBlur =
+                10;
+
+
+            ctx.shadowColor =
+                particle.color;
+
+
+            ctx.beginPath();
+
+
+            ctx.arc(
+
+                particle.x,
+
+                particle.y,
+
+                particle.size,
+
+                0,
+
+                Math.PI * 2
+
+            );
+
+
+            ctx.fill();
+
+        }
+
+    );
+
+
+    ctx.globalAlpha =
+        1;
+
+
+    ctx.shadowBlur =
+        0;
+
+}
+
+
+/* =========================
+   DRAW
+========================= */
+
+function draw() {
+
+    drawBackground();
+
+
+    obstacles.forEach(
+
+        drawObstacle
+
+    );
+
+
+    orbs.forEach(
+
+        drawOrb
+
+    );
+
+
+    shields.forEach(
+
+        drawShield
+
+    );
+
+
+    drawParticles();
+
+
+    drawPlayer();
+
+}
+
+
+/* =========================
+   GAME LOOP
+========================= */
+
+function loop(time) {
+
+    if (
+        !running
+        ||
+        paused
+    ) {
+
+        return;
+
+    }
+
+
+    const dt =
+
+        Math.min(
+
+            32,
+
+            time
+            -
+            lastTime
+
+        );
+
+
+    lastTime =
+        time;
+
+
+    update(dt);
+
+
+    draw();
+
+
+    requestAnimationFrame(
+
+        loop
+
+    );
+
+}
+
+
+/* =========================
+   GAME OVER
+========================= */
+
+function gameOver() {
+
+    if (
+        !running
+    ) {
+
+        return;
+
+    }
+
+
+    running =
+        false;
+
+
+    sound(
+
+        90,
+
+        .35,
+
+        "sawtooth"
+
+    );
+
+
+    const finalScore =
+
+        Math.floor(score);
+
+
+    const oldBest =
+
+        Number(
+
+            localStorage
+                .getItem(
+                    "neonDriftBest"
+                )
+
+            ||
+
+            0
+
+        );
+
+
+    let best =
+        oldBest;
+
+
+    if (
+        finalScore
+        >
+        oldBest
+    ) {
+
+        best =
+            finalScore;
+
+
+        localStorage
+            .setItem(
+
+                "neonDriftBest",
+
+                finalScore
+
+            );
+
+    }
+
+
+    document
+        .getElementById(
+            "finalScore"
+        )
+        .textContent =
+            finalScore;
+
+
+    document
+        .getElementById(
+            "bestScore"
+        )
+        .textContent =
+            best;
+
+
+    document
+        .getElementById(
+            "finalCombo"
+        )
+        .textContent =
+
+            "x"
+
+            +
+
+            bestCombo;
+
+
+    flash.style.opacity =
+        ".75";
+
+
+    setTimeout(
+
+        () => {
+
+            flash.style.transition =
+                "opacity .4s";
+
+
+            flash.style.opacity =
+                "0";
+
+        },
+
+        30
+
+    );
+
+
+    setTimeout(
+
+        () => {
+
+            document
+                .getElementById(
+                    "gameOverScreen"
+                )
+                .style
+                .display =
+                    "flex";
+
+        },
+
+        450
+
+    );
+
+}
+
+
+/* =========================
+   BEST SCORE
+========================= */
+
+function updateBestUI() {
+
+    const best =
+
+        localStorage
+            .getItem(
+                "neonDriftBest"
+            )
+
+        ||
+
+        0;
+
+
+    document
+        .getElementById(
+            "startBest"
+        )
+        .textContent =
+            best;
+
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(
+
+    text,
+
+    color
+
+) {
+
+    message.textContent =
+        text;
+
+
+    message.style.color =
+        color;
+
+
+    message.style.transition =
+        "none";
+
+
+    message.style.opacity =
+        "1";
+
+
+    message.style.transform =
+
+        "translate(-50%,-50%) scale(1.15)";
+
+
+    setTimeout(
+
+        () => {
+
+            message.style.transition =
+                ".5s";
+
+
+            message.style.opacity =
+                "0";
+
+
+            message.style.transform =
+
+                "translate(-50%,-65%) scale(.9)";
+
+        },
+
+        450
+
+    );
+
+}
+
+
+/* =========================
+   TOUCH CONTROLS
+========================= */
+
+canvas.addEventListener(
+
+    "pointerdown",
+
+    event => {
+
+        player.targetX =
+            event.clientX;
+
+    }
+
+);
+
+
+canvas.addEventListener(
+
+    "pointermove",
+
+    event => {
+
+        if (
+
+            event.buttons
+
+            ||
+
+            event.pointerType
+            ===
+            "touch"
+
+        ) {
+
+            player.targetX =
+                event.clientX;
+
+        }
+
+    }
+
+);
+
+
+/* =========================
+   KEYBOARD CONTROLS
+========================= */
+
+window.addEventListener(
+
+    "keydown",
+
+    event => {
+
+        if (
+
+            event.key
+            ===
+            "ArrowLeft"
+
+        ) {
+
+            player.targetX -=
+                55;
+
+        }
+
+
+        if (
+
+            event.key
+            ===
+            "ArrowRight"
+
+        ) {
+
+            player.targetX +=
+                55;
+
+        }
+
+
+        if (
+
+            event.key
+            ===
+            "Escape"
+
+        ) {
+
+            if (paused) {
+
+                resumeGame();
+
+            }
+
+            else {
+
+                pauseGame();
+
+            }
+
+        }
+
+    }
+
+);
+
+
+/* =========================
+   VIBRATION
+========================= */
+
+function vibrate(
+
+    pattern
+
+) {
+
+    if (
+
+        navigator.vibrate
+
+    ) {
+
+        navigator.vibrate(
+
+            pattern
+
+        );
+
+    }
+
+}
+
+
+/* =========================
+   SOUND
+========================= */
+
+let audioCtx =
+    null;
+
+
+function unlockAudio() {
+
+    if (
+        !audioCtx
+    ) {
+
+        audioCtx =
+
+            new (
+
+                window.AudioContext
+
+                ||
+
+                window.webkitAudioContext
+
+            )();
+
+    }
+
+
+    if (
+
+        audioCtx.state
+        ===
+        "suspended"
+
+    ) {
+
+        audioCtx.resume();
+
+    }
+
+}
+
+
+function sound(
+
+    frequency,
+
+    duration,
+
+    type = "sine"
+
+) {
+
+    if (
+        !audioCtx
+    ) {
+
+        return;
+
+    }
+
+
+    const oscillator =
+
+        audioCtx
+            .createOscillator();
+
+
+    const gain =
+
+        audioCtx
+            .createGain();
+
+
+    oscillator.type =
+        type;
+
+
+    oscillator.frequency.value =
+        frequency;
+
+
+    gain.gain
+        .setValueAtTime(
+
+            .08,
+
+            audioCtx.currentTime
+
+        );
+
+
+    gain.gain
+        .exponentialRampToValueAtTime(
+
+            .001,
+
+            audioCtx.currentTime
+            +
+            duration
+
+        );
+
+
+    oscillator.connect(
+
+        gain
+
+    );
+
+
+    gain.connect(
+
+        audioCtx.destination
+
+    );
+
+
+    oscillator.start();
+
+
+    oscillator.stop(
+
+        audioCtx.currentTime
+
+        +
+
+        duration
+
+    );
+
+}
+
+
+/* =========================
+   PAUSE WHEN APP IS HIDDEN
+========================= */
+
+document.addEventListener(
+
+    "visibilitychange",
+
+    () => {
+
+        if (
+
+            document.hidden
+
+            &&
+
+            running
+
+            &&
+
+            !paused
+
+        ) {
+
+            pauseGame();
+
+        }
+
+    }
+
+);
+
+
+/* =========================
+   INITIAL LOAD
+========================= */
+
+resize();
+
+updateBestUI();
+
+draw();
+
+</script>
+
+
+<!-- =========================
+     SERVICE WORKER
+========================= -->
+
+<script>
+
+if (
+    "serviceWorker"
+    in
+    navigator
+) {
+
+    window.addEventListener(
+
+        "load",
+
+        () => {
+
+            navigator
+                .serviceWorker
+                .register(
+                    "./sw.js"
+                )
+                .then(
+                    () => {
+
+                        console.log(
+                            "Neon Drift service worker loaded"
+                        );
+
+                    }
+                )
+                .catch(
+                    error => {
+
+                        console.log(
+
+                            "Service worker error:",
+
+                            error
+
+                        );
+
+                    }
+                );
+
+        }
+
+    );
+
+}
+
+</script>
+
+</body>
+</html>
